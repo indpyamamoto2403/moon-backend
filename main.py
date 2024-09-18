@@ -1,16 +1,21 @@
 from fastapi import FastAPI, Response
+from fastapi.middleware.cors import CORSMiddleware
+from get_response import get_response
 import json
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    data = {"Hello": "sir"}
-    json_data = json.dumps(data)
-    return Response(content=json_data, media_type="application/json")
+# Define the CORS configuration to allow all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    data = {"item_id": item_id, "q": q}
+@app.get("/{endpoint}")
+def read_root(endpoint: str):
+    data = {"answer": get_response(endpoint)}
     json_data = json.dumps(data)
     return Response(content=json_data, media_type="application/json")
